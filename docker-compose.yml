@@ -1,0 +1,46 @@
+version: "2"
+services:
+
+  # TODO - Dockerize Spring service
+  # spring:
+    # image: Dockerfile
+    # restart: always
+    # network_mode: host
+    # ports:
+      # - "8080:8080"
+    # volumes:
+      # - spring:/usr/share/spring/data
+    # environment:
+      # - qualcosa
+
+  elasticsearch:
+    # Spring Data ES version limitation
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.2
+    restart: always
+    network_mode: host
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
+      - cluster.name=jgBay-cluster
+      - bootstrap.memory_lock=true
+      - "xpack.security.enabled=false"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+
+  kibana:
+    # Spring Data ES version limitation
+    image: docker.elastic.co/kibana/kibana:6.2.2
+    restart: always
+    network_mode: host
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_URL: http://localhost:9200
+
+# Must be mounted like this or else permission aren't correct
+volumes:
+  esdata:
+    driver: local
